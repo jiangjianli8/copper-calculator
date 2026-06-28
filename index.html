@@ -419,12 +419,12 @@ input[type=range]::-webkit-slider-thumb {
 <div class="container">
   <div class="header">
     <h1>铜矿石套保计算器</h1>
-    <div class="subtitle">基于上期所沪铜期货主连行情</div>
+    <div class="subtitle">基于SMM 1#电解铜现货行情</div>
   </div>
 
   <!-- 实时铜价 -->
   <div class="price-card">
-    <div class="price-label"><span class="dot"></span> 实时铜价参考（沪铜连续）</div>
+    <div class="price-label"><span class="dot"></span> SMM 1#电解铜（现货）</div>
     <div class="price-value" id="priceDisplay">--<span class="unit">元/吨</span></div>
     <div class="price-meta">
       <span id="priceTime">加载中...</span>
@@ -479,7 +479,7 @@ var COEFF_TABLE = [
   [11,78],[12,80],[13,83],[14,86],[15,88],[16,89],[17,90],[18,91],[19,92],[20,93],[21,95]
 ];
 
-var basePrice = 102930; // 默认价格
+var basePrice = 101570; // 默认价格
 var manualOverride = false;
 
 // ==================== 系数查表（线性插值） ====================
@@ -532,63 +532,37 @@ function highlightTableRow(grade) {
 
 // ==================== 价格获取 ====================
 function fetchPrice() {
-  var display = document.getElementById('priceDisplay');
-  var timeEl = document.getElementById('priceTime');
-  var dot = document.querySelector('.price-label .dot');
-
-  // Try live API first (api.fsxsymall.com), fallback to static JSON (GitHub Actions)
-  var API_URL = 'https://api.fsxsymall.com/api/copper-price';
-
-  fetch(API_URL + '?_=' + Date.now(), { signal: AbortSignal.timeout(5000) })
-    .then(function(r) { return r.json(); })
-    .then(function(data) {
-      var price = data.success ? data.data.price : data.price;
-      if (!price) throw new Error('no price');
-      if (!manualOverride) basePrice = price;
-      display.innerHTML = price.toLocaleString() + '<span class="unit">元/吨</span>';
-      timeEl.textContent = (data.date || data.time || '') + ' · 实时行情';
-      if (dot) dot.style.background = '#4caf50';
-      updateCalcDisplay();
-    })
-    .catch(function() {
-      fetch('data/price.json?_=' + Date.now())
-        .then(function(r) { return r.json(); })
-        .then(function(data) {
-          if (data.price) {
-            if (!manualOverride) basePrice = data.price;
-            display.innerHTML = data.price.toLocaleString() + '<span class="unit">元/吨</span>';
-            timeEl.textContent = (data.updated_at || data.date || '') + ' · 静态缓存';
-            if (dot) dot.style.background = '#ff9800';
-            updateCalcDisplay();
-          } else {
-            useDefaultPrice(display, timeEl, dot);
-          }
-        })
-        .catch(function() {
-          useDefaultPrice(display, timeEl, dot);
-        });
-    });
-}
-
-function useDefaultPrice(display, timeEl, dot) {
-  if (!basePrice) basePrice = 102930;
-  display.innerHTML = basePrice.toLocaleString() + '<span class="unit">元/吨</span>';
-  timeEl.innerHTML = '<span class="price-error">离线模式 · 使用默认参考价</span>';
-  if (dot) dot.style.background = '#e05555';
-  updateCalcDisplay();
-}
-
-function updateCalcDisplay() {
-  if (!manualOverride) updateCalc();
-}
-function setManualPrice() {
+    var d = document.getElementById('priceDisplay');
+    var t = document.getElementById('priceTime');
+    var dot = document.getElementById('statusDot');
+    d.innerHTML = '<span class="spinner"></span>';
+    if (dot) dot.style.background = '#daa520';
+    fetch('data/price.json?t=' + Date.now())
+      .then(function(r) { return r.json(); })
+      .then(function(data) {
+        if (!manualOverride && data.price > 0) basePrice = data.price;
+        d.innerHTML = basePrice.toLocaleString() + '<span class="unit">元/吨</span>';
+        t.textContent = '更新于 ' + (data.updated_at || data.date || '');
+        if (dot) dot.style.background = '#4caf50';
+        if (!manualOverride) { updateCalc(); renderOreRows(); }
+      })
+      .catch(function() {
+        d.innerHTML = basePrice.toLocaleString() + '<span class="unit">元/吨</span>';
+        t.innerHTML = '<span class="price-error">离线 · SMM参考价</span>';
+        if (dot) dot.style.background = '#e05555';
+        updateCalc(); renderOreRows();
+      });
+  }
+  function setManualPrice() {
   var val = parseFloat(document.getElementById('manualPriceInput').value);
   if (val > 0) {
     basePrice = val;
     manualOverride = true;
     document.getElementById('priceDisplay').innerHTML = val.toLocaleString() + '<span class="unit">元/吨</span>';
     document.getElementById('priceTime').textContent = '手动输入价格';
-    updateCalc();
+    var dot = document.getElementById('statusDot');
+    if (dot) dot.style.background = '#daa520';
+    updateCalc(); renderOreRows();
   }
 }
 
