@@ -1,38 +1,54 @@
 ﻿#!/usr/bin/env python3
-"""Fetch SHFE copper futures price from Sina Finance and save to JSON."""
-import json, urllib.request, os, re, sys
-from datetime import datetime
+"""Fetch 1#电解铜 spot price from SMM AJAX API (no auth needed).
+   Saves to data/price.json for GitHub Pages.
+"""
+import json, urllib.request, os
+from datetime import datetime, timezone, timedelta
 
-URL = 'https://hq.sinajs.cn/list=nf_CU0'
-req = urllib.request.Request(URL, headers={'Referer': 'https://finance.sina.com.cn'})
+CST = timezone(timedelta(hours=8))
+now = datetime.now(CST)
+
+SMM_PRODUCT_ID = "201102250376"
+end_date = now.strftime("%Y-%m-%d")
+start_date = (now - timedelta(days=30)).strftime("%Y-%m-%d")
+SMM_API = f"https://hq.smm.cn/ajax/spot/history/{SMM_PRODUCT_ID}/{start_date}/{end_date}"
+
+price_data = {
+    "symbol": "1#电解铜 (SMM现货)",
+    "price": 101570,
+    "unit": "元/吨",
+    "date": now.strftime("%Y-%m-%d"),
+    "updated_at": now.strftime("%Y-%m-%d %H:%M:%S"),
+    "source": "smm_ajax",
+}
+
 try:
-    with urllib.request.urlopen(req, timeout=15) as resp:
-        text = resp.read().decode('gbk', errors='ignore')
-        match = re.search(r'"([^"]*)"', text)
-        if not match:
-            print('ERROR: failed to parse Sina response')
-            sys.exit(1)
-        parts = match.group(1).split(',')
-        if len(parts) < 4:
-            print('ERROR: insufficient data fields')
-            sys.exit(1)
-        price = float(parts[3])
-        if price <= 0:
-            print('ERROR: invalid price')
-            sys.exit(1)
-        now = datetime.now()
-        price_data = {
-            'symbol': 'CU0 (沪铜连续)',
-            'price': price,
-            'unit': '元/吨',
-            'date': now.strftime('%Y-%m-%d'),
-            'updated_at': now.strftime('%Y-%m-%d %H:%M:%S'),
-            'source': 'sina_shfe_realtime'
+    req = urllib.request.Request(
+        SMM_API,
+        headers={
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
+            "Referer": f"https://hq.smm.cn/copper/category/{SMM_PRODUCT_ID}",
         }
-        out_path = os.path.join(os.path.dirname(__file__), '..', 'data', 'price.json')
-        with open(out_path, 'w', encoding='utf-8') as f:
-            json.dump(price_data, f, ensure_ascii=False, indent=2)
-        print(f'OK price={price:.0f} date={price_data["date"]}')
+    )
+    with urllib.request.urlopen(req, timeout=15) as resp:
+        smm = json.loads(resp.read().decode())
+        if smm.get("code") == 0 and smm.get("data"):
+            latest = smm["data"][-1]
+            avg = latest.get("average", 0)
+            if avg > 0:
+                price_data["price"] = int(avg)
+                price_data["smm_renew_date"] = latest.get("renew_date", "")
+                price_data["smm_high"] = latest.get("high_show", "")
+                price_data["smm_low"] = latest.get("low_show", "")
+                print(f"SMM: {int(avg)} 元/吨 (updated: {latest.get('renew_date')})")
+        else:
+            print(f"WARN: SMM code={smm.get('code')}")
 except Exception as e:
-    print(f'ERROR {e}')
-    sys.exit(1)
+    print(f"WARN: SMM fetch failed - {e}")
+
+out_dir = os.path.join(os.path.dirname(__file__), "..", "data")
+os.makedirs(out_dir, exist_ok=True)
+with open(os.path.join(out_dir, "price.json"), "w", encoding="utf-8") as f:
+    json.dump(price_data, f, ensure_ascii=False, indent=2)
+
+print(f"OK price={price_data['price']} yuan/ton")
