@@ -1,0 +1,33 @@
+﻿name: Update Copper Price
+
+# Run every 5 minutes during trading hours (Mon-Fri, Beijing Time 8:50-15:05)
+on:
+  schedule:
+    - cron: '50,55 0 * * 1-5'
+    - cron: '*/5 1-6 * * 1-5'
+    - cron: '0,5 7 * * 1-5'
+  workflow_dispatch:
+
+jobs:
+  update-price:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Fetch copper price
+        run: python3 scripts/fetch-copper-price.py
+
+      - name: Commit and push if changed
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email 'github-actions[bot]@users.noreply.github.com'
+          git add data/price.json
+          if git diff --staged --quiet; then
+            echo 'No price change'
+          else
+            git commit -m "Copper price update: $(python3 -c "import json; print(int(json.load(open('data/price.json'))['price']))")"
+            git push
+          fi
