@@ -1,8 +1,11 @@
 {
   "symbol": "1#电解铜 (SMM现货)",
-  "price": 101570,
+  "price": 102995,
   "unit": "元/吨",
   "date": "2026-07-08",
-  "updated_at": "2026-07-08 09:29:00",
-  "source": "smm_ajax"
+  "updated_at": "2026-07-08 12:57:59",
+  "source": "smm_ajax",
+  "smm_renew_date": "2026-07-08",
+  "smm_high": "103080",
+  "smm_low": "102910"
 }
