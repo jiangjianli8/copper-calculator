@@ -1,11 +1,20 @@
 {
-  "symbol": "1#电解铜 (SMM现货)",
-  "price": 102995,
+  "symbol": "沪铜连续 (CU0) — 广期所/上期所",
+  "price": 103000,
   "unit": "元/吨",
-  "date": "2026-07-09",
-  "updated_at": "2026-07-09 09:50:58",
-  "source": "smm_ajax",
-  "smm_renew_date": "2026-07-08",
-  "smm_high": "103080",
-  "smm_low": "102910"
+  "date": "2026-07-08",
+  "updated_at": "2026-07-09 15:35:46",
+  "source": "akshare_sina_futures",
+  "detail": {
+    "open": 103080.0,
+    "high": 103500.0,
+    "low": 102720.0,
+    "close": 102850.0,
+    "settle": 103000.0,
+    "volume": 67529,
+    "hold": 149665
+  },
+  "change": 40,
+  "change_rate": 0.04,
+  "trend": "up"
 }
