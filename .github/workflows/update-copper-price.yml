@@ -1,4 +1,4 @@
-﻿name: Update Copper Price
+name: Update Copper Price
 
 on:
   schedule:
@@ -8,6 +8,7 @@ on:
 jobs:
   update-price:
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     permissions:
       contents: write
     steps:
