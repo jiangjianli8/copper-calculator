@@ -645,7 +645,7 @@ input[type=range]::-webkit-slider-thumb:hover {
 
     <h1>铜矿石套保计算器</h1>
 
-    <div class="subtitle">基于SMM 1#电解铜现货行情</div>
+    <div class="subtitle">基于沪铜连续 (CU0) 期货行情</div>
 
   </div>
 
@@ -655,7 +655,7 @@ input[type=range]::-webkit-slider-thumb:hover {
 
   <div class="price-card">
 
-    <div class="price-label"><span class="dot"></span> SMM 1#电解铜（现货）</div>
+    <div class="price-label"><span class="dot"></span> 沪铜连续 (CU0) · 新浪期货</div>
 
     <div class="price-value" id="priceDisplay">--<span class="unit">元/吨</span></div>
 
@@ -903,7 +903,7 @@ function fetchPrice() {
 
         d.innerHTML = basePrice.toLocaleString() + '<span class="unit">元/吨</span>';
 
-        t.innerHTML = '<span class="price-error">离线 · SMM参考价</span>';
+        t.innerHTML = '<span class="price-error">离线 · 上次缓存价</span>';
 
         if (dot) dot.style.background = '#e05555';
 
