@@ -1,20 +1,20 @@
 {
   "symbol": "沪铜连续 (CU0) — 广期所/上期所",
-  "price": 109450,
+  "price": 109850,
   "unit": "元/吨",
-  "date": "2026-10-16",
-  "updated_at": "2026-10-19 10:15:38",
+  "date": "2026-10-19",
+  "updated_at": "2026-10-19 17:23:48",
   "source": "akshare_sina_futures",
   "detail": {
-    "open": 108850.0,
-    "high": 110240.0,
-    "low": 108600.0,
-    "close": 109860.0,
-    "settle": 109450.0,
-    "volume": 107081,
-    "hold": 176859
+    "open": 110000.0,
+    "high": 110150.0,
+    "low": 109400.0,
+    "close": 109770.0,
+    "settle": 109850.0,
+    "volume": 65631,
+    "hold": 167976
   },
-  "change": -300,
-  "change_rate": -0.27,
-  "trend": "down"
+  "change": 400,
+  "change_rate": 0.37,
+  "trend": "up"
 }
