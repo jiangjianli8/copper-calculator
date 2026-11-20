@@ -895,7 +895,7 @@ function fetchPrice() {
 
         if (dot) dot.style.background = '#4caf50';
 
-        if (!manualOverride) { updateCalc(); renderOreRows(); }
+        if (!manualOverride) { updateCalc(); renderOreRowsIfIdle(); }
 
       })
 
@@ -907,7 +907,7 @@ function fetchPrice() {
 
         if (dot) dot.style.background = '#e05555';
 
-        updateCalc(); renderOreRows();
+        updateCalc(); renderOreRowsIfIdle();
 
       });
 
@@ -1045,7 +1045,21 @@ function toggleTable() {
 
 var oreRows = [5, 8, 12]; // 默认三行
 
+// 用户正在某个输入框里打字时，不要重建行 DOM —— 60 秒自动刷新会清掉未提交的输入。
+// 注意排除 range/checkbox/radio：拖滑块时焦点也在 <input> 上，但那是正常操作，不该跳过重绘。
+function isEditingInput() {
+  var ae = document.activeElement;
+  if (!ae) return false;
+  if (ae.isContentEditable) return true;
+  if (ae.tagName !== 'INPUT' && ae.tagName !== 'TEXTAREA') return false;
+  var t = (ae.type || 'text').toLowerCase();
+  return t !== 'range' && t !== 'checkbox' && t !== 'radio' && t !== 'button' && t !== 'submit';
+}
 
+// 自动刷新专用：用户正在输入就跳过重绘，用户操作触发的重绘仍然直接调 renderOreRows()
+function renderOreRowsIfIdle() {
+  if (!isEditingInput()) renderOreRows();
+}
 
 function renderOreRows() {
 

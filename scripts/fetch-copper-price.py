@@ -36,7 +36,8 @@ def fetch_price():
     price = settle_price if settle_price > 0 else close_price
 
     result = {
-        "symbol": "\u6caa\u94dc\u8fde\u7eed (CU0) \u2014 \u5e7f\u671f\u6240/\u4e0a\u671f\u6240",
+        # \u4fee\u6b63\uff1a\u94dc\u4e0d\u5728\u5e7f\u671f\u6240\uff08\u5e7f\u671f\u6240\u76ee\u524d\u53ea\u6709\u5de5\u4e1a\u7845/\u78b3\u9178\u9502\u7b49\uff09\uff0cCU0 \u662f\u4e0a\u671f\u6240\u54c1\u79cd
+        "symbol": "\u6caa\u94dc\u8fde\u7eed (CU0) \u2014 \u4e0a\u671f\u6240\u7ed3\u7b97\u4ef7",
         "price": round(price),
         "unit": "\u5143/\u5428",
         "date": trade_date,
