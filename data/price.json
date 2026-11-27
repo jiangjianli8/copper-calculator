@@ -1,20 +1,20 @@
 {
   "symbol": "沪铜连续 (CU0) — 上期所结算价",
-  "price": 88770,
+  "price": 91820,
   "unit": "元/吨",
-  "date": "2026-11-26",
-  "updated_at": "2026-11-27 13:44:04",
+  "date": "2026-11-27",
+  "updated_at": "2026-11-27 23:46:19",
   "source": "akshare_sina_futures",
   "detail": {
-    "open": 88250.0,
-    "high": 90860.0,
-    "low": 86860.0,
-    "close": 89300.0,
-    "settle": 88770.0,
-    "volume": 393395,
-    "hold": 218479
+    "open": 89900.0,
+    "high": 95030.0,
+    "low": 88950.0,
+    "close": 93660.0,
+    "settle": 91820.0,
+    "volume": 320878,
+    "hold": 199885
   },
-  "change": -990,
-  "change_rate": -1.1,
-  "trend": "down"
+  "change": 3050,
+  "change_rate": 3.44,
+  "trend": "up"
 }
